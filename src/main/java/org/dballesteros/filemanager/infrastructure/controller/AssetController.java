@@ -7,10 +7,13 @@ import openapi.api.model.AssetFileUploadRequest;
 import openapi.api.model.AssetFileUploadResponse;
 import openapi.api.model.SortDirectionEnum;
 import org.dballesteros.filemanager.application.usecase.SearchAssetsUseCase;
+import org.dballesteros.filemanager.application.usecase.UploadAssetUseCase;
 import org.dballesteros.filemanager.domain.model.AssetDto;
 import org.dballesteros.filemanager.domain.model.AssetFilter;
 import org.dballesteros.filemanager.domain.model.SortDirection;
 import org.dballesteros.filemanager.domain.util.TimeUtil;
+import org.dballesteros.filemanager.infrastructure.controller.mapper.AssetFileUploadRequestMapper;
+import org.dballesteros.filemanager.infrastructure.controller.mapper.AssetFileUploadResponseMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
@@ -24,6 +27,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AssetController implements ApiFileManager {
     private final SearchAssetsUseCase searchAssetsUseCase;
+    private final UploadAssetUseCase uploadAssetUseCase;
+    private final AssetFileUploadRequestMapper assetFileUploadRequestMapper;
+    private final AssetFileUploadResponseMapper assetFileUploadResponseMapper;
     private final AssetRestMapper assetRestMapper;
 
     @Override
@@ -38,12 +44,12 @@ public class AssetController implements ApiFileManager {
                 .map(assetRestMapper::toApiModel);
     }
 
-
-
     @Override
     @ResponseStatus(HttpStatus.OK)
     public Mono<AssetFileUploadResponse> uploadAssetFile(Mono<AssetFileUploadRequest> assetFileUploadRequest, ServerWebExchange exchange) {
-        return ApiFileManager.super.uploadAssetFile(assetFileUploadRequest, exchange);
+        return assetFileUploadRequest
+                .map(assetFileUploadRequestMapper::toDomain)
+                .flatMap(uploadAssetUseCase::upload)
+                .map(assetFileUploadResponseMapper::toApiModel);
     }
 }
-

@@ -47,3 +47,5 @@ https://chatgpt.com/share/68cc9c4e-dda0-800a-a378-0cd930490378
 https://dev.to/rock_win_c053fa5fb2399067/hexagonal-architecture-in-spring-boot-microservices-a-complete-guide-with-folder-structure-1jld
 https://www.youtube.com/watch?v=BKyiJaYdtSg
 https://www.youtube.com/watch?v=PcoeGzGomqs
+https://www.baeldung.com/spring-boot-return-errors-problemdetail
+https://itnext.io/an-introduction-to-spring-problem-details-support-38850dcf81e1

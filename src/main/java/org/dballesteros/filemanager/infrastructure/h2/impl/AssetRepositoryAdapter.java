@@ -16,6 +16,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Repository
@@ -34,6 +35,20 @@ public class AssetRepositoryAdapter implements AssetRepositoryPort {
     }
 
     @Override
+    public Mono<AssetDto> update(AssetDto asset) {
+        return Mono.fromCallable(() -> {
+            return assetJpaRepository.findByUuid(UUID.fromString((asset.getId())))
+                    .map(assetEntity -> {
+                        assetEntity.setUploadDateEnd(asset.getUploadDateEnd());
+                        assetEntity.setUrl(asset.getUrl());
+                        return assetJpaRepository.save(assetEntity);
+                    })
+                    .map(assetEntityMapper::toDomain)
+                    .orElseThrow(() -> new RuntimeException("Asset not found with id: " + asset.getId()));
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
+
+    @Override
     public Flux<AssetDto> search(AssetDto assetDto, AssetFilter assetFilter) {
         return Mono.fromCallable(() -> {
             Specification<AssetEntity> specification = Specification.allOf();
@@ -43,10 +58,10 @@ public class AssetRepositoryAdapter implements AssetRepositoryPort {
                         Optional.ofNullable(ad.getFilename())
                                 .ifPresent(filename ->
                                         specification.and((root, query, criteriaBuilder) ->
-                                        criteriaBuilder.like(root.get("name"), "%" + filename + "%")));
+                                        criteriaBuilder.like(root.get("name"), new StringBuilder().append("%").append(filename).append("%").toString())));
                         Optional.ofNullable(ad.getUrl())
                                 .ifPresent(url -> specification.and((root, query, criteriaBuilder) ->
-                                        criteriaBuilder.like(root.get("url"), "%" + url + "%")));
+                                        criteriaBuilder.like(root.get("url"), new StringBuilder().append("%").append(url).append("%").toString())));
                         return assetJpaRepository.findAll(specification);
                     }).orElse(new ArrayList<>());
         })

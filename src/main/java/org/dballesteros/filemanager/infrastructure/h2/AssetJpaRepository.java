@@ -12,5 +12,6 @@ import java.util.UUID;
 
 @Repository
 public interface AssetJpaRepository extends JpaRepository<AssetEntity, Long>, JpaSpecificationExecutor<AssetEntity> {
+    Optional<AssetEntity> findByUuid(UUID uuid);
 }
 

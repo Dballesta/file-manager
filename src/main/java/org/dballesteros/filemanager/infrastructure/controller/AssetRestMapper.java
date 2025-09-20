@@ -13,17 +13,12 @@ import java.util.function.Function;
 
 @Mapper(componentModel = "spring")
 public interface AssetRestMapper {
-    AssetRestMapper INSTANCE = Mappers.getMapper(AssetRestMapper.class);
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "filename", source = "filename")
     @Mapping(target = "url", source = "url")
     @Mapping(target = "uploadDate", source = "uploadDateStart", qualifiedByName = "instantToString")
     Asset toApiModel(AssetDto assetDto);
-
-    default Function<AssetDto, Asset> toApiModelFunction() {
-        return this::toApiModel;
-    }
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "filename", source = "filename")
@@ -33,9 +28,6 @@ public interface AssetRestMapper {
     @Mapping(target = "uploadDateStart", source = "uploadDate", qualifiedByName = "stringToInstant")
     AssetDto toDomainModel(Asset asset);
 
-    default Function<Asset, AssetDto> toDomainModelFunction() {
-        return this::toDomainModel;
-    }
 
     @Named("instantToString")
     static String instantToString(Instant instant) {

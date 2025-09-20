@@ -6,7 +6,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface AssetRepositoryPort {
+
     Mono<AssetDto> save(AssetDto asset);
+
     Flux<AssetDto> search(AssetDto assetDto, AssetFilter assetFilter);
+
+    Mono<AssetDto> update(AssetDto assetDto);
 }
 

@@ -135,7 +135,9 @@
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <version>${openapi-generator.version}</version>
                 <executions>
+                    <!-- Generates the api -->
                     <execution>
+                        <id>generate-api</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -147,13 +149,38 @@
                             <apiPackage>openapi.api</apiPackage>
                             <modelPackage>openapi.api.model</modelPackage>
                             <invokerPackage>openapi</invokerPackage>
-<!--                            <configHelp>true</configHelp>-->
+                            <generateApiTests>false</generateApiTests>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <library>spring-boot</library>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <reactive>true</reactive>
                                 <useResponseEntity>false</useResponseEntity>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <!-- Generates the webclient to consume the filebin API -->
+                    <!-- https://filebin.net/api#/file -->
+                    <execution>
+                        <id>generate-openapi-webclient</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/filebin-openapi.yaml</inputSpec>
+                            <generatorName>java</generatorName>
+                            <library>webclient</library>
+                            <apiPackage>openapi.client.api</apiPackage>
+                            <modelPackage>openapi.client.model</modelPackage>
+                            <invokerPackage>openapi.client.core</invokerPackage>
+                            <output>${project.build.directory}/generated-sources/openapi</output>
+                            <generateApiTests>false</generateApiTests>
+<!--                            <configHelp>true</configHelp>-->
+                            <configOptions>
+                                <serializationLibrary>jackson</serializationLibrary>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useBeanValidation>true</useBeanValidation>
+                                <useRuntimeException>true</useRuntimeException>
                             </configOptions>
                         </configuration>
                     </execution>

@@ -21,8 +21,23 @@ spring:
   h2:
     console:
       enabled: true
+## Allow large file uploads
+  http:
+    codecs:
+      max-in-memory-size: 16MB
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+logging:
+  level:
+    org:
+      dballesteros:
+        filemanager: DEBUG
+app:
+  filebin:
+    base-url: https://filebin.net
+    bin-id: 240r46powncwlnnk
+    cid: db-boot
 
