@@ -7,41 +7,32 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
-import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface AssetEntityMapper {
 
-    @Mapping(target = "uuid", source = "id" , qualifiedByName = "stringToUuid")
-    @Mapping(target = "url", source = "url")
-    @Mapping(target = "filename", source = "filename")
-    @Mapping(target = "contentType", source = "contentType")
-    @Mapping(target = "size", source = "size")
-    @Mapping(target = "uploadDateStart", source = "uploadDateStart")
-    @Mapping(target = "uploadDateEnd", source = "uploadDateEnd")
+    AssetEntityMapper INSTANCE = Mappers.getMapper(AssetEntityMapper.class);
+
+    @Mapping(target = "uuid", source = "id", qualifiedByName = "stringToUuid")
     AssetEntity toEntity(AssetDto asset);
 
+    @Mapping(target = "encodedFile", ignore = true)
     @Mapping(target = "id", source = "uuid", qualifiedByName = "uuidToString")
-    @Mapping(target = "filename", source = "filename")
-    @Mapping(target = "contentType", source = "contentType")
-    @Mapping(target = "url", source = "url")
-    @Mapping(target = "size", source = "size")
-    @Mapping(target = "uploadDateStart", source = "uploadDateStart")
-    @Mapping(target = "uploadDateEnd", source = "uploadDateEnd")
     AssetDto toDomain(AssetEntity entity);
 
     @Named("uuidToString")
-    default String uuidToString(UUID uuid) {
-        return Objects.nonNull(uuid)
-                ? uuid.toString()
-                : null;
+    default String uuidToString(final UUID uuid) {
+        return Optional.ofNullable(uuid)
+                .map(Object::toString)
+                .orElse(null);
     }
 
     @Named("stringToUuid")
-    default UUID stringToUuid(String uuidString) {
-        return Objects.nonNull(uuidString)
-                ? UUID.fromString(uuidString)
-                : null;
+    default UUID stringToUuid(final String uuidString) {
+        return Optional.ofNullable(uuidString)
+                .map(UUID::fromString)
+                .orElse(null);
     }
 }

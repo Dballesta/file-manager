@@ -15,12 +15,12 @@ import org.dballesteros.filemanager.domain.util.TimeUtil;
 import org.dballesteros.filemanager.infrastructure.controller.mapper.AssetFileUploadRequestMapper;
 import org.dballesteros.filemanager.infrastructure.controller.mapper.AssetFileUploadResponseMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Instant;
 import java.util.Optional;
 
 @RestController
@@ -28,28 +28,34 @@ import java.util.Optional;
 public class AssetController implements ApiFileManager {
     private final SearchAssetsUseCase searchAssetsUseCase;
     private final UploadAssetUseCase uploadAssetUseCase;
-    private final AssetFileUploadRequestMapper assetFileUploadRequestMapper;
-    private final AssetFileUploadResponseMapper assetFileUploadResponseMapper;
-    private final AssetRestMapper assetRestMapper;
 
     @Override
     @ResponseStatus(HttpStatus.CREATED)
-    public Flux<Asset> getAssetsByFilter(String uploadDateStart, String uploadDateEnd, String filename, String filetype, SortDirectionEnum sortDirection, ServerWebExchange exchange) {
-        return searchAssetsUseCase.search(new AssetDto(TimeUtil.stringToInstant(uploadDateStart),
-                                TimeUtil.stringToInstant(uploadDateEnd),
-                                filename, filetype),
-                new AssetFilter(Optional.ofNullable(sortDirection)
-                        .map(sd -> SortDirection.fromValue(null))
-                        .orElse(null)))
-                .map(assetRestMapper::toApiModel);
+    public Flux<Asset> getAssetsByFilter(final String uploadDateStart, final String uploadDateEnd, final String filename, final String filetype, final SortDirectionEnum sortDirection, final ServerWebExchange exchange) {
+        final AssetDto assetDto = AssetDto.builder()
+                .uploadDateStart(TimeUtil.stringToInstant(uploadDateStart))
+                .uploadDateEnd(TimeUtil.stringToInstant(uploadDateEnd))
+                .filename(filename)
+                .contentType(filetype)
+                .build();
+
+        final AssetFilter assetFilter = AssetFilter.builder()
+                .sortDirection(Optional.ofNullable(sortDirection)
+                        .map(SortDirectionEnum::getValue)
+                        .map(SortDirection::fromValue)
+                        .orElse(null))
+                .build();
+
+        return this.searchAssetsUseCase.search(assetDto, assetFilter)
+                .map(AssetRestMapper.INSTANCE::toApiModel);
     }
 
     @Override
-    @ResponseStatus(HttpStatus.OK)
-    public Mono<AssetFileUploadResponse> uploadAssetFile(Mono<AssetFileUploadRequest> assetFileUploadRequest, ServerWebExchange exchange) {
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Mono<AssetFileUploadResponse> uploadAssetFile(final Mono<AssetFileUploadRequest> assetFileUploadRequest, final ServerWebExchange exchange) {
         return assetFileUploadRequest
-                .map(assetFileUploadRequestMapper::toDomain)
-                .flatMap(uploadAssetUseCase::upload)
-                .map(assetFileUploadResponseMapper::toApiModel);
+                .map(AssetFileUploadRequestMapper.INSTANCE::toDomain)
+                .flatMap(this.uploadAssetUseCase::upload)
+                .map(AssetFileUploadResponseMapper.INSTANCE::toApiModel);
     }
 }

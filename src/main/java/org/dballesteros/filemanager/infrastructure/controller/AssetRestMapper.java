@@ -9,38 +9,32 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.Instant;
 import java.util.Objects;
-import java.util.function.Function;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface AssetRestMapper {
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "filename", source = "filename")
-    @Mapping(target = "url", source = "url")
-    @Mapping(target = "uploadDate", source = "uploadDateStart", qualifiedByName = "instantToString")
-    Asset toApiModel(AssetDto assetDto);
-
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "filename", source = "filename")
-    @Mapping(target = "contentType", source = "contentType")
-    @Mapping(target = "url", source = "url")
-    @Mapping(target = "size", source = "size")
-    @Mapping(target = "uploadDateStart", source = "uploadDate", qualifiedByName = "stringToInstant")
-    AssetDto toDomainModel(Asset asset);
-
+    AssetRestMapper INSTANCE = Mappers.getMapper(AssetRestMapper.class);
 
     @Named("instantToString")
-    static String instantToString(Instant instant) {
+    static String instantToString(final Instant instant) {
         return Objects.nonNull(instant)
                 ? instant.toString()
                 : null;
     }
 
     @Named("stringToInstant")
-    static Instant stringToInstant(String value) {
+    static Instant stringToInstant(final String value) {
         return Objects.nonNull(value)
                 ? Instant.parse(value)
                 : null;
     }
+
+    @Mapping(target = "uploadDate", source = "uploadDateStart", qualifiedByName = "instantToString")
+    Asset toApiModel(AssetDto assetDto);
+
+    @Mapping(target = "uploadDateEnd", ignore = true)
+    @Mapping(target = "encodedFile", ignore = true)
+    @Mapping(target = "uploadDateStart", source = "uploadDate", qualifiedByName = "stringToInstant")
+    AssetDto toDomainModel(Asset asset);
 }
 

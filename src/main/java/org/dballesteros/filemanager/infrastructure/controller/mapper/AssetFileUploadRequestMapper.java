@@ -6,11 +6,15 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface AssetFileUploadRequestMapper {
 
-    @Mapping(target = "filename", source = "filename")
-    @Mapping(target = "encodedFile", source = "encodedFile")
-    @Mapping(target = "contentType", source = "contentType")
+    AssetFileUploadRequestMapper INSTANCE = Mappers.getMapper(AssetFileUploadRequestMapper.class);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "size", ignore = true)
+    @Mapping(target = "uploadDateEnd", ignore = true)
+    @Mapping(target = "uploadDateStart", ignore = true)
+    @Mapping(target = "url", ignore = true)
     AssetDto toDomain(AssetFileUploadRequest request);
 }

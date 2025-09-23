@@ -5,6 +5,9 @@ spring:
     init:
       platform: h2
       mode: always
+  threads:
+    virtual:
+      enabled: true
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -21,7 +24,7 @@ spring:
   h2:
     console:
       enabled: true
-## Allow large file uploads
+  ## Allow large file uploads
   http:
     codecs:
       max-in-memory-size: 16MB
@@ -35,6 +38,7 @@ logging:
     org:
       dballesteros:
         filemanager: DEBUG
+    root: debug
 app:
   filebin:
     base-url: https://filebin.net
