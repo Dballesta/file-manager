@@ -1,4 +1,4 @@
-package org.dballesteros.filemanager.domain.model;
+package org.dballesteros.filemanager.domain.model.exception;
 
 import lombok.Getter;
 

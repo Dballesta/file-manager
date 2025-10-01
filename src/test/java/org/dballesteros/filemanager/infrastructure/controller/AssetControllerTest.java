@@ -3,7 +3,7 @@ package org.dballesteros.filemanager.infrastructure.controller;
 import org.dballesteros.filemanager.application.usecase.SearchAssetsUseCase;
 import org.dballesteros.filemanager.application.usecase.UploadAssetUseCase;
 import org.dballesteros.filemanager.domain.model.AssetDto;
-import org.dballesteros.filemanager.domain.model.AssetFilter;
+import org.dballesteros.filemanager.domain.model.search.AssetFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

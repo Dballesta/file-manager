@@ -1,4 +1,4 @@
-package org.dballesteros.filemanager.domain.model;
+package org.dballesteros.filemanager.domain.model.search;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package org.dballesteros.filemanager.application.usecase;
 
 import org.dballesteros.filemanager.domain.model.AssetDto;
-import org.dballesteros.filemanager.domain.model.AssetFilter;
+import org.dballesteros.filemanager.domain.model.search.AssetFilter;
 import reactor.core.publisher.Flux;
 
 public interface SearchAssetsUseCase {

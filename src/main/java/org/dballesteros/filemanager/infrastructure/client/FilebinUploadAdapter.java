@@ -3,7 +3,7 @@ package org.dballesteros.filemanager.infrastructure.client;
 import lombok.RequiredArgsConstructor;
 import openapi.client.api.FileApi;
 import org.dballesteros.filemanager.domain.model.AssetDto;
-import org.dballesteros.filemanager.domain.model.ExceptionDetail;
+import org.dballesteros.filemanager.domain.model.exception.ExceptionDetail;
 import org.dballesteros.filemanager.domain.port.client.UploadClientPort;
 import org.dballesteros.filemanager.infrastructure.config.FilebinConfigProps;
 import org.springframework.stereotype.Service;
