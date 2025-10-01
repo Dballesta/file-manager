@@ -37,8 +37,8 @@ logging:
   level:
     org:
       dballesteros:
-        filemanager: DEBUG
-    root: debug
+        filemanager: ERROR
+    root: ERROR
 app:
   filebin:
     base-url: https://filebin.net
