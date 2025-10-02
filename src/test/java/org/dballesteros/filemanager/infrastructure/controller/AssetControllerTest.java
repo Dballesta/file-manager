@@ -1,5 +1,6 @@
 package org.dballesteros.filemanager.infrastructure.controller;
 
+import openapi.api.model.AssetFileUploadRequest;
 import org.dballesteros.filemanager.application.usecase.SearchAssetsUseCase;
 import org.dballesteros.filemanager.application.usecase.UploadAssetUseCase;
 import org.dballesteros.filemanager.domain.model.AssetDto;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -42,5 +44,20 @@ class AssetControllerTest {
                 .verifyComplete();
 
         verify(this.searchAssetsUseCase).search(any(AssetDto.class), any(AssetFilter.class));
+    }
+
+    @Test
+    void testUploadAssetFile() {
+        final AssetFileUploadRequest requestBody = new AssetFileUploadRequest();
+        final AssetDto assetDto = AssetDto.builder().id("1").filename("file1.txt").build();
+
+        when(this.uploadAssetUseCase.upload(any(AssetDto.class)))
+                .thenReturn(Mono.just(assetDto));
+
+        StepVerifier.create(this.assetController.uploadAssetFile(Mono.just(requestBody), null))
+                .expectNextCount(1)
+                .verifyComplete();
+
+        verify(this.uploadAssetUseCase).upload(any(AssetDto.class));
     }
 }

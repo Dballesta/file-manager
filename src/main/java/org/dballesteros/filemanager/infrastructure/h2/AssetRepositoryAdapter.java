@@ -1,4 +1,4 @@
-package org.dballesteros.filemanager.infrastructure.h2.impl;
+package org.dballesteros.filemanager.infrastructure.h2;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -6,9 +6,9 @@ import org.dballesteros.filemanager.domain.model.AssetDto;
 import org.dballesteros.filemanager.domain.model.exception.ExceptionDetail;
 import org.dballesteros.filemanager.domain.model.search.AssetFilter;
 import org.dballesteros.filemanager.domain.port.repository.AssetRepositoryPort;
-import org.dballesteros.filemanager.infrastructure.h2.AssetJpaRepository;
 import org.dballesteros.filemanager.infrastructure.h2.entity.AssetEntity;
 import org.dballesteros.filemanager.infrastructure.h2.mapper.AssetEntityMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -25,13 +25,27 @@ import java.util.UUID;
 public class AssetRepositoryAdapter implements AssetRepositoryPort {
     private final AssetJpaRepository assetJpaRepository;
 
-    private static void addAndLikeStartEndSpec(final Specification<AssetEntity> specification, final String rootKey, final String value) {
-        Optional.ofNullable(value)
-                .ifPresent(val ->
+    private static Specification<AssetEntity> addAndLikeStartEndSpec(final Specification<AssetEntity> specification, final String rootKey, final String value) {
+        return Optional.ofNullable(value)
+                .map(val ->
                         specification.and((root, query, criteriaBuilder) ->
-                                criteriaBuilder.like(root.get(rootKey), "%%%s%%".formatted(val))));
+                                criteriaBuilder.like(root.get(rootKey), "%" + val + "%")))
+                .orElse(specification);
     }
 
+    private static Sort getAssetFilterSortByUploadDate(final AssetFilter assetFilter) {
+        return Optional.ofNullable(assetFilter)
+                .map(AssetFilter::getSortDirection)
+                .map(sortDirection -> Sort.by(Sort.Direction.fromString(sortDirection.toString()), "uploadDateStart"))
+                .orElse(Sort.by(Sort.Direction.DESC, "uploadDateStart"));
+    }
+
+    private static Specification<AssetEntity> getAssetEntitySpecification(final AssetDto ad) {
+        Specification<AssetEntity> specification = Specification.allOf();
+        specification = addAndLikeStartEndSpec(specification, "filename", ad.getFilename());
+        specification = addAndLikeStartEndSpec(specification, "url", ad.getUrl());
+        return specification;
+    }
 
     @Override
     public Mono<AssetDto> save(final AssetDto asset) {
@@ -56,19 +70,14 @@ public class AssetRepositoryAdapter implements AssetRepositoryPort {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
-    //ExceptionDetail.of("UPDATE_EXCEPTION", "Asset not found with id: " + asset.getId())
     @Override
     public Flux<AssetDto> search(final AssetDto assetDto, final AssetFilter assetFilter) {
-        return Mono.fromCallable(() -> {
-                    final Specification<AssetEntity> specification = Specification.allOf();
-                    // Add specifications based on assetDomain and assetFilter
-                    return Optional.ofNullable(assetDto)
-                            .map(ad -> {
-                                addAndLikeStartEndSpec(specification, "filename", ad.getFilename());
-                                addAndLikeStartEndSpec(specification, "url", ad.getUrl());
-                                return this.assetJpaRepository.findAll(specification);
-                            }).orElse(new ArrayList<>());
-                })
+        return Mono.fromCallable(() -> Optional.ofNullable(assetDto)
+                        .map(ad -> {
+                            final Specification<AssetEntity> specification = getAssetEntitySpecification(ad);
+                            final Sort sort = getAssetFilterSortByUploadDate(assetFilter);
+                            return this.assetJpaRepository.findAll(specification, sort);
+                        }).orElse(new ArrayList<>()))
                 .flatMapMany(Flux::fromIterable)
                 .map(AssetEntityMapper.INSTANCE::toDomain)
                 .subscribeOn(Schedulers.boundedElastic());

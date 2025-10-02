@@ -30,7 +30,7 @@ public class AssetController implements ApiFileManager {
     private final UploadAssetUseCase uploadAssetUseCase;
 
     @Override
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     public Flux<Asset> getAssetsByFilter(final String uploadDateStart, final String uploadDateEnd, final String filename, final String filetype, final SortDirectionEnum sortDirection, final ServerWebExchange exchange) {
         final AssetDto assetDto = AssetDto.builder()
                 .uploadDateStart(TimeUtil.stringToInstant(uploadDateStart))

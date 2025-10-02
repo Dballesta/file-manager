@@ -4,5 +4,5 @@ import org.dballesteros.filemanager.domain.model.AssetDto;
 import reactor.core.publisher.Mono;
 
 public interface UploadClientPort {
-    Mono<Void> uploadFile(AssetDto assetDto);
+    Mono<AssetDto> uploadFile(AssetDto assetDto);
 }

@@ -2,6 +2,7 @@ package org.dballesteros.filemanager.application.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dballesteros.filemanager.application.service.impl.AsyncUploadServiceImpl;
 import org.dballesteros.filemanager.application.usecase.UploadAssetUseCase;
 import org.dballesteros.filemanager.domain.model.AssetDto;
 import org.dballesteros.filemanager.domain.port.repository.AssetRepositoryPort;
@@ -13,7 +14,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UploadAssetService implements UploadAssetUseCase {
     private final AssetRepositoryPort assetRepository;
-    private final AsyncUploadService asyncUploadService;
+    private final AsyncUploadServiceImpl asyncUploadService;
 
     @Override
     public Mono<AssetDto> upload(final AssetDto assetDto) {

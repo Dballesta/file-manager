@@ -1,6 +1,9 @@
 spring:
   application:
     name: file-manager
+  webflux:
+    problemdetails:
+      enabled: true
   sql:
     init:
       platform: h2
@@ -44,4 +47,8 @@ app:
     base-url: https://filebin.net
     bin-id: 240r46powncwlnnk
     cid: db-boot
+server:
+  error:
+    include-stacktrace: never
+
 
