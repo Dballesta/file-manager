@@ -72,6 +72,7 @@ paths:
           application/octet-stream:
             schema:
               type: string
+              format: binary
       parameters:
         - name: cid
           in: header

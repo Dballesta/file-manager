@@ -20,8 +20,7 @@ public class AsyncUploadServiceImpl implements AsyncUploadService {
     @Async("uploadExecutor")
     public void uploadFileAsync(final AssetDto assetDto) {
         this.uploadClientPort.uploadFile(assetDto)
-                .map(this.assetRepository::update)
-                .then()
+                .flatMap(this.assetRepository::update)
                 .toFuture();
     }
 }

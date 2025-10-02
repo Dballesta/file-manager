@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(ExceptionDetail.class)
     public Mono<ProblemDetail> handleCustomException(final ExceptionDetail ex) {
         log.error("Custom exception occurred: Code - {}, Message - {}",
                 ex.getCode(), ex.getMessage(), ex);
@@ -26,6 +26,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Mono<ProblemDetail> handleNotHandledException(final Throwable ex) {
         log.error("Unexpected exception occurred: Message - {}", ex.getMessage(), ex);
-        return Mono.just(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()));
+        return Mono.just(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage()));
     }
 }

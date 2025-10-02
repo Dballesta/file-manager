@@ -11,15 +11,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ByteArrayResource;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
-import java.util.Base64;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -44,13 +43,13 @@ class FilebinUploadAdapterTest {
     }
 
     @Test
-    void upload_success_setsUrlAndEnd_andEncodesBase64() {
+    void uploadShouldReturnOkAndTransformByteToByteArrayResource() {
         final AssetDto asset = new AssetDto();
         asset.setFilename("pic.png");
         asset.setEncodedFile(new byte[]{1, 2, 3, 4});
         final Instant before = Instant.now();
 
-        when(this.fileApi.binFilenamePost(eq(BIN_ID), eq("pic.png"), eq(CID), anyString()))
+        when(this.fileApi.binFilenamePost(eq(BIN_ID), eq("pic.png"), eq(CID), any(ByteArrayResource.class)))
                 .thenReturn(Mono.empty());
 
         StepVerifier.create(this.adapter.uploadFile(asset))
@@ -61,23 +60,22 @@ class FilebinUploadAdapterTest {
                 })
                 .verifyComplete();
 
-        final ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
+        final ArgumentCaptor<ByteArrayResource> bodyCaptor = ArgumentCaptor.forClass(ByteArrayResource.class);
         verify(this.fileApi, times(1))
                 .binFilenamePost(eq(BIN_ID), eq("pic.png"), eq(CID), bodyCaptor.capture());
 
-        final String expectedB64 = Base64.getEncoder().encodeToString(new byte[]{1, 2, 3, 4});
-        assertThat(bodyCaptor.getValue()).isEqualTo(expectedB64);
+        assertThat(bodyCaptor.getValue()).isEqualTo(new ByteArrayResource(asset.getEncodedFile()));
 
         verifyNoMoreInteractions(this.fileApi);
     }
 
     @Test
-    void upload_error_mapsToExceptionDetail() {
+    void testUploadShouldMapErrorInsteadOfRetriesError() {
         final AssetDto asset = new AssetDto();
         asset.setFilename("doc.pdf");
         asset.setEncodedFile(new byte[]{9, 9, 9});
 
-        when(this.fileApi.binFilenamePost(eq(BIN_ID), eq("doc.pdf"), eq(CID), anyString()))
+        when(this.fileApi.binFilenamePost(eq(BIN_ID), eq("doc.pdf"), eq(CID), any(ByteArrayResource.class)))
                 .thenReturn(Mono.error(new RuntimeException("boom")));
 
         StepVerifier.create(this.adapter.uploadFile(asset))
@@ -91,19 +89,19 @@ class FilebinUploadAdapterTest {
                 })
                 .verify();
 
-        verify(this.fileApi).binFilenamePost(eq(BIN_ID), eq("doc.pdf"), eq(CID), anyString());
+        verify(this.fileApi).binFilenamePost(eq(BIN_ID), eq("doc.pdf"), eq(CID), any(ByteArrayResource.class));
         verifyNoMoreInteractions(this.fileApi);
     }
 
     @Test
-    void upload_retries_then_succeeds() {
+    void testUploadShouldRecoverAfterNRetriesAndThenSuccess() {
         final AssetDto asset = new AssetDto();
         asset.setFilename("retry.txt");
         asset.setEncodedFile(new byte[]{7, 7, 7});
 
         final AtomicInteger attempts = new AtomicInteger(0);
 
-        when(this.fileApi.binFilenamePost(eq(BIN_ID), eq("retry.txt"), eq(CID), anyString()))
+        when(this.fileApi.binFilenamePost(eq(BIN_ID), eq("retry.txt"), eq(CID), any(ByteArrayResource.class)))
                 .thenAnswer(inv -> Mono.defer(() -> {
                     if (attempts.getAndIncrement() == 0) {
                         return Mono.error(new RuntimeException("transient"));
@@ -115,7 +113,7 @@ class FilebinUploadAdapterTest {
                 .expectNextMatches(a -> (BASE_URL + "/" + BIN_ID + "/retry.txt").equals(a.getUrl()))
                 .verifyComplete();
 
-        verify(this.fileApi, times(1)).binFilenamePost(eq(BIN_ID), eq("retry.txt"), eq(CID), anyString());
+        verify(this.fileApi, times(1)).binFilenamePost(eq(BIN_ID), eq("retry.txt"), eq(CID), any(ByteArrayResource.class));
         assertThat(attempts.get()).isGreaterThanOrEqualTo(2);
         verifyNoMoreInteractions(this.fileApi);
     }

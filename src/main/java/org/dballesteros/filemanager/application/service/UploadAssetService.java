@@ -19,6 +19,10 @@ public class UploadAssetService implements UploadAssetUseCase {
     @Override
     public Mono<AssetDto> upload(final AssetDto assetDto) {
         return this.assetRepository.save(assetDto)
-                .doOnSuccess(assetDto1 -> this.asyncUploadService.uploadFileAsync(assetDto));
+                .map(asset -> {
+                    assetDto.setId(asset.getId());
+                    return assetDto;
+                })
+                .doOnSuccess(this.asyncUploadService::uploadFileAsync);
     }
 }

@@ -175,6 +175,11 @@
                             <invokerPackage>openapi.client.core</invokerPackage>
                             <output>${project.build.directory}/generated-sources/openapi</output>
                             <generateApiTests>false</generateApiTests>
+                            <!--Work around, The api is not defined by specification and changing to binary
+                             in format requires File.class in body getting errors during update
+                            , changed api definition too in used post method to type:string format:binary-->
+                            <typeMappings>string+binary=Resource</typeMappings>
+                            <importMappings>Resource=org.springframework.core.io.Resource</importMappings>
                             <configOptions>
                                 <serializationLibrary>jackson</serializationLibrary>
                                 <useJakartaEe>true</useJakartaEe>

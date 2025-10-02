@@ -26,7 +26,7 @@ class UploadAssetServiceTest {
 
 
     @Test
-    void upload() {
+    void testUpload() {
         final AssetDto assetDto = AssetDto.builder().build();
 
         when(this.assetRepository.save(any(AssetDto.class)))
