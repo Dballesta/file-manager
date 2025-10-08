@@ -1,7 +1,7 @@
 package org.dballesteros.filemanager.infrastructure.client;
 
 import openapi.client.api.FileApi;
-import org.dballesteros.filemanager.domain.model.AssetDto;
+import org.dballesteros.filemanager.domain.model.AssetDomain;
 import org.dballesteros.filemanager.domain.model.exception.ExceptionDetail;
 import org.dballesteros.filemanager.infrastructure.config.FilebinConfigProps;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +44,7 @@ class FilebinUploadAdapterTest {
 
     @Test
     void uploadShouldReturnOkAndTransformByteToByteArrayResource() {
-        final AssetDto asset = new AssetDto();
+        final AssetDomain asset = new AssetDomain();
         asset.setFilename("pic.png");
         asset.setEncodedFile(new byte[]{1, 2, 3, 4});
         final Instant before = Instant.now();
@@ -71,7 +71,7 @@ class FilebinUploadAdapterTest {
 
     @Test
     void testUploadShouldMapErrorInsteadOfRetriesError() {
-        final AssetDto asset = new AssetDto();
+        final AssetDomain asset = new AssetDomain();
         asset.setFilename("doc.pdf");
         asset.setEncodedFile(new byte[]{9, 9, 9});
 
@@ -95,7 +95,7 @@ class FilebinUploadAdapterTest {
 
     @Test
     void testUploadShouldRecoverAfterNRetriesAndThenSuccess() {
-        final AssetDto asset = new AssetDto();
+        final AssetDomain asset = new AssetDomain();
         asset.setFilename("retry.txt");
         asset.setEncodedFile(new byte[]{7, 7, 7});
 

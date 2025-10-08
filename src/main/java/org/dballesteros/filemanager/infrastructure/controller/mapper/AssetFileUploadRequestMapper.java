@@ -1,7 +1,7 @@
 package org.dballesteros.filemanager.infrastructure.controller.mapper;
 
 import openapi.api.model.AssetFileUploadRequest;
-import org.dballesteros.filemanager.domain.model.AssetDto;
+import org.dballesteros.filemanager.domain.model.AssetDomain;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -16,5 +16,5 @@ public interface AssetFileUploadRequestMapper {
     @Mapping(target = "uploadDateEnd", ignore = true)
     @Mapping(target = "uploadDateStart", ignore = true)
     @Mapping(target = "url", ignore = true)
-    AssetDto toDomain(AssetFileUploadRequest request);
+    AssetDomain toDomain(AssetFileUploadRequest request);
 }

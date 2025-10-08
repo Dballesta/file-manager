@@ -4,6 +4,8 @@ spring:
   webflux:
     problemdetails:
       enabled: true
+  reactor:
+    context-propagation: auto
   sql:
     init:
       platform: h2
@@ -40,7 +42,7 @@ logging:
   level:
     org:
       dballesteros:
-        filemanager: ERROR
+        filemanager: TRACE
     root: ERROR
 app:
   filebin:

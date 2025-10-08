@@ -1,7 +1,8 @@
 package org.dballesteros.filemanager.application.service;
 
-import org.dballesteros.filemanager.domain.model.AssetDto;
-import org.dballesteros.filemanager.domain.model.search.AssetFilter;
+import org.dballesteros.filemanager.application.usecase.SearchAssetUseCaseImpl;
+import org.dballesteros.filemanager.domain.model.AssetDomain;
+import org.dballesteros.filemanager.domain.model.search.AssetFilterDomain;
 import org.dballesteros.filemanager.domain.port.repository.AssetRepositoryPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,27 +16,27 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class SearchAssetServiceTest {
+class SearchAssetUseCaseImplTest {
 
     @Mock
     private AssetRepositoryPort assetRepository;
 
     @InjectMocks
-    private SearchAssetService searchAssetService;
+    private SearchAssetUseCaseImpl searchAssetUseCaseImpl;
 
     @Test
     void testSearch() {
-        final AssetDto assetDto = new AssetDto();
-        final AssetFilter assetFilter = AssetFilter.builder().build();
+        final AssetDomain assetDomain = new AssetDomain();
+        final AssetFilterDomain assetFilter = AssetFilterDomain.builder().build();
 
 
-        when(this.assetRepository.search(any(AssetDto.class), any(AssetFilter.class))).thenReturn(Flux.just(assetDto));
+        when(this.assetRepository.search(any(AssetDomain.class), any(AssetFilterDomain.class))).thenReturn(Flux.just(assetDomain));
 
-        StepVerifier.create(this.searchAssetService.search(assetDto, assetFilter))
+        StepVerifier.create(this.searchAssetUseCaseImpl.search(assetDomain, assetFilter))
                 .expectNextCount(1)
                 .verifyComplete();
 
-        verify(this.assetRepository).search(any(AssetDto.class), any(AssetFilter.class));
+        verify(this.assetRepository).search(any(AssetDomain.class), any(AssetFilterDomain.class));
 
         verifyNoMoreInteractions(this.assetRepository);
     }

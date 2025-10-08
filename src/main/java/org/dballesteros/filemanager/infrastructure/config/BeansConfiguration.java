@@ -18,15 +18,15 @@ import java.util.concurrent.Executors;
 public class BeansConfiguration {
     FilebinConfigProps filebinConfigProps;
 
-    @Bean
-    public FileApi fileApi() {
-        final ApiClient apiClient = new ApiClient();
-        apiClient.setBasePath(this.filebinConfigProps.getBaseUrl());
-        return new FileApi(apiClient);
+    @Bean(name = "uploadExecutor")
+    public static Executor uploadExecutor() {
+        return Executors.newVirtualThreadPerTaskExecutor();
     }
 
-    @Bean(name = "uploadExecutor")
-    public Executor uploadExecutor() {
-        return Executors.newVirtualThreadPerTaskExecutor();
+    @Bean
+    public FileApi fileApi() {
+        ApiClient apiClient = new ApiClient();
+        apiClient.setBasePath(this.filebinConfigProps.getBaseUrl());
+        return new FileApi(apiClient);
     }
 }

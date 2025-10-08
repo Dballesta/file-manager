@@ -4,7 +4,7 @@ package org.dballesteros.filemanager.domain.model.search;
 import lombok.Getter;
 
 @Getter
-public enum SortDirection {
+public enum SortDirectionDomain {
 
     ASC("ASC"),
 
@@ -12,12 +12,12 @@ public enum SortDirection {
 
     private final String value;
 
-    SortDirection(final String value) {
+    SortDirectionDomain(final String value) {
         this.value = value;
     }
 
-    public static SortDirection fromValue(final String value) {
-        for (final SortDirection b : SortDirection.values()) {
+    public static SortDirectionDomain fromValue(final String value) {
+        for (final SortDirectionDomain b : SortDirectionDomain.values()) {
             if (b.value.equals(value)) {
                 return b;
             }

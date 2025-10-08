@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class AssetFilter {
+public class AssetFilterDomain {
 
-    private SortDirection sortDirection;
+    private SortDirectionDomain sortDirection;
 }

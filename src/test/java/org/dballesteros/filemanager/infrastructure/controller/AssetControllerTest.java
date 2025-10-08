@@ -1,10 +1,10 @@
 package org.dballesteros.filemanager.infrastructure.controller;
 
 import openapi.api.model.AssetFileUploadRequest;
-import org.dballesteros.filemanager.application.usecase.SearchAssetsUseCase;
-import org.dballesteros.filemanager.application.usecase.UploadAssetUseCase;
-import org.dballesteros.filemanager.domain.model.AssetDto;
-import org.dballesteros.filemanager.domain.model.search.AssetFilter;
+import org.dballesteros.filemanager.domain.usecase.SearchAssetsUseCase;
+import org.dballesteros.filemanager.domain.usecase.UploadAssetUseCase;
+import org.dballesteros.filemanager.domain.model.AssetDomain;
+import org.dballesteros.filemanager.domain.model.search.AssetFilterDomain;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,31 +33,31 @@ class AssetControllerTest {
 
     @Test
     void testGetAssetsByFilter() {
-        when(this.searchAssetsUseCase.search(any(AssetDto.class), any(AssetFilter.class)))
+        when(this.searchAssetsUseCase.search(any(AssetDomain.class), any(AssetFilterDomain.class)))
                 .thenReturn(
-                        Flux.just(AssetDto.builder().id("1").filename("file1.txt").build(),
-                                AssetDto.builder().id("2").filename("file2.txt").build()));
+                        Flux.just(AssetDomain.builder().id("1").filename("file1.txt").build(),
+                                AssetDomain.builder().id("2").filename("file2.txt").build()));
 
 
         StepVerifier.create(this.assetController.getAssetsByFilter(null, null, "file", null, null, null))
                 .expectNextCount(2)
                 .verifyComplete();
 
-        verify(this.searchAssetsUseCase).search(any(AssetDto.class), any(AssetFilter.class));
+        verify(this.searchAssetsUseCase).search(any(AssetDomain.class), any(AssetFilterDomain.class));
     }
 
     @Test
     void testUploadAssetFile() {
         final AssetFileUploadRequest requestBody = new AssetFileUploadRequest();
-        final AssetDto assetDto = AssetDto.builder().id("1").filename("file1.txt").build();
+        final AssetDomain assetDomain = AssetDomain.builder().id("1").filename("file1.txt").build();
 
-        when(this.uploadAssetUseCase.upload(any(AssetDto.class)))
-                .thenReturn(Mono.just(assetDto));
+        when(this.uploadAssetUseCase.upload(any(AssetDomain.class)))
+                .thenReturn(Mono.just(assetDomain));
 
         StepVerifier.create(this.assetController.uploadAssetFile(Mono.just(requestBody), null))
                 .expectNextCount(1)
                 .verifyComplete();
 
-        verify(this.uploadAssetUseCase).upload(any(AssetDto.class));
+        verify(this.uploadAssetUseCase).upload(any(AssetDomain.class));
     }
 }

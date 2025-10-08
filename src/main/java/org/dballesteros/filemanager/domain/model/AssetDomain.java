@@ -9,7 +9,8 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class AssetDto {
+@ToString
+public class AssetDomain {
     private String id;
     private String filename;
     private byte[] encodedFile;

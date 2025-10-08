@@ -1,6 +1,7 @@
 package org.dballesteros.filemanager.application.service.impl;
 
-import org.dballesteros.filemanager.domain.model.AssetDto;
+import org.dballesteros.filemanager.application.service.AsyncUploadServiceImpl;
+import org.dballesteros.filemanager.domain.model.AssetDomain;
 import org.dballesteros.filemanager.domain.port.client.UploadClientPort;
 import org.dballesteros.filemanager.domain.port.repository.AssetRepositoryPort;
 import org.junit.jupiter.api.Test;
@@ -25,16 +26,16 @@ class AsyncUploadServiceTest {
 
     @Test
     void testUploadFileAsync() {
-        final AssetDto assetDto = new AssetDto();
-        when(this.uploadClientPort.uploadFile(any(AssetDto.class)))
-                .thenReturn(Mono.just(assetDto));
-        when(this.assetRepository.update(any(AssetDto.class)))
-                .thenReturn(Mono.just(assetDto));
+        final AssetDomain assetDomain = new AssetDomain();
+        when(this.uploadClientPort.uploadFile(any(AssetDomain.class)))
+                .thenReturn(Mono.just(assetDomain));
+        when(this.assetRepository.update(any(AssetDomain.class)))
+                .thenReturn(Mono.just(assetDomain));
 
-        this.asyncUploadService.uploadFileAsync(assetDto);
+        this.asyncUploadService.uploadFileAsync(assetDomain);
 
-        verify(this.uploadClientPort).uploadFile(any(AssetDto.class));
-        verify(this.assetRepository).update(any(AssetDto.class));
+        verify(this.uploadClientPort).uploadFile(any(AssetDomain.class));
+        verify(this.assetRepository).update(any(AssetDomain.class));
 
         verifyNoMoreInteractions(this.uploadClientPort, this.assetRepository);
     }

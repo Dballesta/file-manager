@@ -1,6 +1,6 @@
 package org.dballesteros.filemanager.infrastructure.h2.mapper;
 
-import org.dballesteros.filemanager.domain.model.AssetDto;
+import org.dballesteros.filemanager.domain.model.AssetDomain;
 import org.dballesteros.filemanager.infrastructure.h2.entity.AssetEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,11 +16,11 @@ public interface AssetEntityMapper {
     AssetEntityMapper INSTANCE = Mappers.getMapper(AssetEntityMapper.class);
 
     @Mapping(target = "uuid", source = "id", qualifiedByName = "stringToUuid")
-    AssetEntity toEntity(AssetDto asset);
+    AssetEntity toEntity(AssetDomain asset);
 
     @Mapping(target = "encodedFile", ignore = true)
     @Mapping(target = "id", source = "uuid", qualifiedByName = "uuidToString")
-    AssetDto toDomain(AssetEntity entity);
+    AssetDomain toDomain(AssetEntity entity);
 
     @Named("uuidToString")
     default String uuidToString(final UUID uuid) {

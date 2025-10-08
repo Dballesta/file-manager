@@ -61,11 +61,9 @@ https://itnext.io/an-introduction-to-spring-problem-details-support-38850dcf81e1
 ## Revisión
 
 - Falta gestión de excepciones en varios flujos reactivos
-- Faltan tests unitarios y de integración
+- Faltan integración
 - Falta configuración en maven para que el IDE cargue automáticamente las clases OpenAPI autogeneradas
 - No se gestiona correctamente la carga asíncrona a filebin y no se puede obtener el asset original.
-- UploadAsyncUseCase no es un caso de uso, no se expone hacia fuera
-- No está implementada la ordenación
 - El modelo de dominio debería reflejar la separación entre las entidades propias y los recursos gestionados en el
   sistema final en el que se alojan.
 - organización/nombrado de las clases no refleja claramente los roles de cada una de ellas dentro de la arquitectura

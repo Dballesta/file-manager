@@ -1,11 +1,11 @@
-package org.dballesteros.filemanager.application.service;
+package org.dballesteros.filemanager.application.usecase;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dballesteros.filemanager.application.service.impl.AsyncUploadServiceImpl;
-import org.dballesteros.filemanager.application.usecase.UploadAssetUseCase;
-import org.dballesteros.filemanager.domain.model.AssetDto;
+import org.dballesteros.filemanager.domain.model.AssetDomain;
 import org.dballesteros.filemanager.domain.port.repository.AssetRepositoryPort;
+import org.dballesteros.filemanager.domain.service.AsyncUploadService;
+import org.dballesteros.filemanager.domain.usecase.UploadAssetUseCase;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -14,14 +14,14 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UploadAssetService implements UploadAssetUseCase {
     private final AssetRepositoryPort assetRepository;
-    private final AsyncUploadServiceImpl asyncUploadService;
+    private final AsyncUploadService asyncUploadService;
 
     @Override
-    public Mono<AssetDto> upload(final AssetDto assetDto) {
-        return this.assetRepository.save(assetDto)
+    public Mono<AssetDomain> upload(AssetDomain assetDomain) {
+        return this.assetRepository.save(assetDomain)
                 .map(asset -> {
-                    assetDto.setId(asset.getId());
-                    return assetDto;
+                    assetDomain.setId(asset.getId());
+                    return assetDomain;
                 })
                 .doOnSuccess(this.asyncUploadService::uploadFileAsync);
     }

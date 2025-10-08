@@ -6,11 +6,11 @@ import openapi.api.model.Asset;
 import openapi.api.model.AssetFileUploadRequest;
 import openapi.api.model.AssetFileUploadResponse;
 import openapi.api.model.SortDirectionEnum;
-import org.dballesteros.filemanager.application.usecase.SearchAssetsUseCase;
-import org.dballesteros.filemanager.application.usecase.UploadAssetUseCase;
-import org.dballesteros.filemanager.domain.model.AssetDto;
-import org.dballesteros.filemanager.domain.model.search.AssetFilter;
-import org.dballesteros.filemanager.domain.model.search.SortDirection;
+import org.dballesteros.filemanager.domain.usecase.SearchAssetsUseCase;
+import org.dballesteros.filemanager.domain.usecase.UploadAssetUseCase;
+import org.dballesteros.filemanager.domain.model.AssetDomain;
+import org.dballesteros.filemanager.domain.model.search.AssetFilterDomain;
+import org.dballesteros.filemanager.domain.model.search.SortDirectionDomain;
 import org.dballesteros.filemanager.domain.util.TimeUtil;
 import org.dballesteros.filemanager.infrastructure.controller.mapper.AssetFileUploadRequestMapper;
 import org.dballesteros.filemanager.infrastructure.controller.mapper.AssetFileUploadResponseMapper;
@@ -32,21 +32,21 @@ public class AssetController implements ApiFileManager {
     @Override
     @ResponseStatus(HttpStatus.OK)
     public Flux<Asset> getAssetsByFilter(final String uploadDateStart, final String uploadDateEnd, final String filename, final String filetype, final SortDirectionEnum sortDirection, final ServerWebExchange exchange) {
-        final AssetDto assetDto = AssetDto.builder()
+        final AssetDomain assetDomain = AssetDomain.builder()
                 .uploadDateStart(TimeUtil.stringToInstant(uploadDateStart))
                 .uploadDateEnd(TimeUtil.stringToInstant(uploadDateEnd))
                 .filename(filename)
                 .contentType(filetype)
                 .build();
 
-        final AssetFilter assetFilter = AssetFilter.builder()
+        final AssetFilterDomain assetFilter = AssetFilterDomain.builder()
                 .sortDirection(Optional.ofNullable(sortDirection)
                         .map(SortDirectionEnum::getValue)
-                        .map(SortDirection::fromValue)
+                        .map(SortDirectionDomain::fromValue)
                         .orElse(null))
                 .build();
 
-        return this.searchAssetsUseCase.search(assetDto, assetFilter)
+        return this.searchAssetsUseCase.search(assetDomain, assetFilter)
                 .map(AssetRestMapper.INSTANCE::toApiModel);
     }
 
